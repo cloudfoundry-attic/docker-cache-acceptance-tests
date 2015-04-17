@@ -38,6 +38,7 @@ The following commands will setup the `CONFIG` for a [bosh-lite](https://github.
 installation. Replace credentials and URLs as appropriate for your environment.
 
 ```bash
+cd $GOPATH/src/github.com/cloudfoundry-incubator/docker-registry-acceptance-tests
 cat > integration_config.json <<EOF
 {
   "api": "api.10.244.0.34.xip.io",
@@ -61,6 +62,5 @@ go install github.com/onsi/ginkgo/ginkgo
 After correctly setting the `CONFIG` environment variable, the following command will run the tests:
 
 ```
-cd $GOPATH/src/github.com/cloudfoundry-incubator/docker-registry-acceptance-tests
 ./bin/test
 ```
