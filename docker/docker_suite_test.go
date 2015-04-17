@@ -1,6 +1,9 @@
 package docker
 
 import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -37,6 +40,16 @@ func guidForSpaceName(spaceName string) string {
 	spaceGuid := strings.TrimSpace(string(cfSpace.Out.Contents()))
 	Expect(spaceGuid).NotTo(Equal(""))
 	return spaceGuid
+}
+
+func assertImageAvailable(registryAddress string, imageName string) {
+	client := http.Client{}
+	resp, err := client.Get(fmt.Sprintf("http://%s/v1/search?q=%s", registryAddress, imageName))
+	Ω(err).ShouldNot(HaveOccurred())
+	Ω(resp.StatusCode).Should(Equal(http.StatusOK))
+	bytes, err := ioutil.ReadAll(resp.Body)
+	Ω(err).ShouldNot(HaveOccurred())
+	Ω(string(bytes)).Should(ContainSubstring("library/" + imageName))
 }
 
 func TestApplications(t *testing.T) {

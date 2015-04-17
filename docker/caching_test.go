@@ -2,8 +2,6 @@ package docker
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"regexp"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
@@ -72,13 +70,7 @@ var _ = Describe("Docker Registry", func() {
 		})
 
 		It("stores the public image in the private registry", func() {
-			client := http.Client{}
-			resp, err := client.Get(fmt.Sprintf("http://%s/v1/search?q=%s", address, imageName))
-			Ω(err).ShouldNot(HaveOccurred())
-			Ω(resp.StatusCode).Should(Equal(http.StatusOK))
-			bytes, err := ioutil.ReadAll(resp.Body)
-			Ω(err).ShouldNot(HaveOccurred())
-			Ω(string(bytes)).Should(ContainSubstring("library/" + imageName))
+			assertImageAvailable(address, imageName)
 		})
 	})
 })
