@@ -21,7 +21,7 @@ go get -t -v ./...
  go get -t -v github.com/cloudfoundry-incubator/docker-registry-acceptance-tests/...
  ```
 
- Either way, we assume you have Golang setup on your workstation.
+Either way, we assume you have Golang setup on your workstation.
 
 ### Test setup
 
@@ -33,9 +33,12 @@ To run the Diego Acceptance tests, you will need:
 - an environment variable `CONFIG` which points to a `.json` file that contains the application domain
 - the [cf CLI](https://github.com/cloudfoundry/cli)
 - ginkgo testing framework
+- Docker executable
+
+#### Configuration
 
 The following commands will setup the `CONFIG` for a [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
-installation. Replace credentials and URLs as appropriate for your environment.
+installation. Replace credentials, URLs and the path to Docker as appropriate for your environment.
 
 ```bash
 cd $GOPATH/src/github.com/cloudfoundry-incubator/docker-registry-acceptance-tests
@@ -45,17 +48,32 @@ cat > integration_config.json <<EOF
   "admin_user": "admin",
   "admin_password": "admin",
   "apps_domain": "10.244.0.34.xip.io",
+  "docker_registry_address": "10.244.2.6:8080",
+  "docker_executable": "docker",
   "skip_ssl_validation": true
 }
 EOF
 export CONFIG=$PWD/integration_config.json
 ```
 
-To install ginkgo:
+#### Install ginkgo:
+
+Install the testing framework with:
 
 ```
 go install github.com/onsi/ginkgo/ginkgo
 ```
+
+#### Setup docker (OSX)
+
+The tests use [Docker](https://www.docker.com/) to check the Registry functionality. [Install Docker](https://docs.docker.com/installation) 
+
+In case you use boot2docker you will need to allow access to the insecure registry by adding your registry address to `/var/lib/boot2docker/profile`. For example:
+
+```
+EXTRA_ARGS='--insecure-registry 10.244.2.6:8080'
+```
+
 
 ### Running the tests
 
@@ -63,4 +81,24 @@ After correctly setting the `CONFIG` environment variable, the following command
 
 ```
 ./bin/test
+```
+
+### Running as BOSH errand
+
+To deploy the tests as BOSH errand you have to:
+
+```
+cd $GOPATH
+
+bosh deployment templates/docker-acceptance-tests.yml
+
+bosh create release --force
+bosh -n upload release
+bosh -n deploy
+```
+
+To start the tests:
+
+```
+bosh run errand docker_acceptance_tests
 ```
