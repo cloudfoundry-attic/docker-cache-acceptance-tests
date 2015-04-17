@@ -32,6 +32,7 @@ To run the Diego Acceptance tests, you will need:
 - credentials for an Admin user
 - an environment variable `CONFIG` which points to a `.json` file that contains the application domain
 - the [cf CLI](https://github.com/cloudfoundry/cli)
+- ginkgo testing framework
 
 The following commands will setup the `CONFIG` for a [bosh-lite](https://github.com/cloudfoundry/bosh-lite)
 installation. Replace credentials and URLs as appropriate for your environment.
@@ -47,6 +48,12 @@ cat > integration_config.json <<EOF
 }
 EOF
 export CONFIG=$PWD/integration_config.json
+```
+
+To install ginkgo:
+
+```
+go install github.com/onsi/ginkgo/ginkgo
 ```
 
 ### Running the tests
