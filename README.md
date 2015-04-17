@@ -61,5 +61,6 @@ go install github.com/onsi/ginkgo/ginkgo
 After correctly setting the `CONFIG` environment variable, the following command will run the tests:
 
 ```
+cd $GOPATH/src/github.com/cloudfoundry-incubator/docker-registry-acceptance-tests
 ./bin/test
 ```
