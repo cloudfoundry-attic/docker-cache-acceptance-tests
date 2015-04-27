@@ -1,6 +1,6 @@
 # Docker Registry Acceptance Tests (DRATs)
 
-This test suite exercises the [Docker Registry](https://github.com/pivotal-cf-experimental/docker-registry-release) when deployed
+This test suite exercises the [Docker Registry](https://github.com/cloudfoundry-incubator/docker-registry-release) when deployed
 alongside [CF Runtime](https://github.com/cloudfoundry/cf-release) and [Diego](https://github.com/cloudfoundry-incubator/diego-release) .
 
 ## Usage
