@@ -42,6 +42,13 @@ func guidForSpaceName(spaceName string) string {
 	return spaceGuid
 }
 
+func createDockerApp(appName, payload string) {
+	Eventually(cf.Cf("curl", "/v2/apps", "-X", "POST", "-d", payload)).Should(Exit(0))
+	domain := helpers.LoadConfig().AppsDomain
+	Eventually(cf.Cf("create-route", context.RegularUserContext().Space, domain, "-n", appName)).Should(Exit(0))
+	Eventually(cf.Cf("map-route", appName, domain, "-n", appName)).Should(Exit(0))
+}
+
 func assertImageAvailable(registryAddress string, imageName string) {
 	client := http.Client{}
 	resp, err := client.Get(fmt.Sprintf("http://%s/v1/search?q=%s", registryAddress, imageName))

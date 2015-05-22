@@ -34,7 +34,7 @@ var _ = Describe("Docker Registry", func() {
 		cmd.Env = os.Environ()
 		err := cmd.Run()
 
-		Ω(err).ShouldNot(HaveOccurred(), fmt.Sprintf("Error executing [%s %s]", config.DockerExecutable, strings.Join(args, " ")))
+		Expect(err).ShouldNot(HaveOccurred(), fmt.Sprintf("Error executing [%s %s]", config.DockerExecutable, strings.Join(args, " ")))
 	}
 
 	BeforeEach(func() {

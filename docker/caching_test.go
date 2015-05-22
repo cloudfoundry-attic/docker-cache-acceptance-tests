@@ -17,8 +17,6 @@ var _ = Describe("Docker Registry", func() {
 	var appName string
 	var createDockerAppPayload string
 
-	domain := helpers.LoadConfig().AppsDomain
-
 	BeforeEach(func() {
 		appName = generator.RandomName()
 
@@ -36,11 +34,10 @@ var _ = Describe("Docker Registry", func() {
 
 	JustBeforeEach(func() {
 		spaceGuid := guidForSpaceName(context.RegularUserContext().Space)
-
 		payload := fmt.Sprintf(createDockerAppPayload, appName, spaceGuid)
-		Eventually(cf.Cf("curl", "/v2/apps", "-X", "POST", "-d", payload)).Should(Exit(0))
-		Eventually(cf.Cf("create-route", context.RegularUserContext().Space, domain, "-n", appName)).Should(Exit(0))
-		Eventually(cf.Cf("map-route", appName, domain, "-n", appName)).Should(Exit(0))
+
+		createDockerApp(appName, payload)
+
 		Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
 		Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 		Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
@@ -57,13 +54,13 @@ var _ = Describe("Docker Registry", func() {
 
 		JustBeforeEach(func() {
 			cfLogs := cf.Cf("logs", appName, "--recent")
-			Ω(cfLogs.Wait()).To(Exit(0))
+			Expect(cfLogs.Wait()).To(Exit(0))
 			contents := string(cfLogs.Out.Contents())
 
 			//TODO: Replace with list all droplets API (/v3/droplets)
 			r := regexp.MustCompile(".*Docker image will be cached as ([0-z.:]+)/([0-z-]+)")
 			imageParts := r.FindStringSubmatch(contents)
-			Ω(len(imageParts)).Should(Equal(3))
+			Expect(len(imageParts)).Should(Equal(3))
 
 			address = imageParts[1]
 			imageName = imageParts[2]
