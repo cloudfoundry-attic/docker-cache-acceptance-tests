@@ -93,6 +93,10 @@ After correctly setting the `CONFIG` environment variable, the following command
 
 To deploy the tests as BOSH errand you have to:
 
+1. Copy the public docker image `cloudfoundry/diego-docker-app:latest`, in your private repo in Docker Hub.
+1. Add the Docker credentials (user, password and email) for access to the image in `$GOPATH/src/github.com/cloudfoundry-incubator/docker-registry-acceptance-tests/templates/bosh-lite.yml`
+1. Deploy the test errand
+
 ```
 cd $GOPATH
 
