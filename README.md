@@ -50,11 +50,17 @@ cat > integration_config.json <<EOF
   "apps_domain": "10.244.0.34.xip.io",
   "docker_registry_address": "10.244.2.6:8080",
   "docker_executable": "docker",
+  "docker_private_image": "private-docker-app"
+  "docker_user": "user",
+  "docker_password": "password",
+  "docker_email": "email@example.com",
   "skip_ssl_validation": true
 }
 EOF
 export CONFIG=$PWD/integration_config.json
 ```
+
+**Note:** The tests require that you have a copy of the public docker image `cloudfoundry/diego-docker-app:latest`, stored in a private repo in Docker Hub. Therefore you need to provide the Docker credentials (user, password and email) for access to the image in the config above.
 
 #### Install ginkgo:
 

@@ -19,7 +19,7 @@ var _ = Describe("Running a Private Docker Image", func() {
 			"instances": 1,
 			"disk_quota": 1024,
 			"space_guid": "%s",
-			"docker_image": "cloudfoundry/private-docker-app:latest",
+			"docker_image": "%s",
 			"docker_credentials_json" : {
 				"docker_user" : "%s",
 				"docker_password" : "%s",
@@ -34,7 +34,14 @@ var _ = Describe("Running a Private Docker Image", func() {
 	JustBeforeEach(func() {
 		spaceGuid := guidForSpaceName(context.RegularUserContext().Space)
 		config := helpers.LoadConfig()
-		payload := fmt.Sprintf(createDockerAppPayload, appName, spaceGuid, config.DockerUser, config.DockerPassword, config.DockerEmail)
+		payload := fmt.Sprintf(createDockerAppPayload,
+			appName,
+			spaceGuid,
+			config.DockerPrivateImage,
+			config.DockerUser,
+			config.DockerPassword,
+			config.DockerEmail,
+		)
 		createDockerApp(appName, payload)
 	})
 
@@ -53,7 +60,7 @@ var _ = Describe("Running a Private Docker Image", func() {
 			Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 		})
 
-		It("stores the public image in the private registry", func() {
+		It("stores the private image in the caching registry", func() {
 			Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
 		})
 	})

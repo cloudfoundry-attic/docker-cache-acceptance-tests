@@ -47,6 +47,10 @@ properties:
     consul_cluster: http://127.0.0.1:8500
     docker_executable: /var/vcap/packages/docker-1.6.0/docker
     docker_parameters: ['-H', 'tcp://0.0.0.0:4243']
+    docker_private_image: cloudfoundry/private-docker-app:latest 
+    docker_user: (( merge )) 
+    docker_password: (( merge ))
+    docker_email: (( merge )) 
     skip_ssl_validation: true
   docker_registry:
     address: 10.244.2.6:8080
