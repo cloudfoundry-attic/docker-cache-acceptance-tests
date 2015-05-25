@@ -19,11 +19,11 @@ var _ = Describe("Running a Private Docker Image", func() {
 			"instances": 1,
 			"disk_quota": 1024,
 			"space_guid": "%s",
-			"docker_image": "hsiliev/diego-docker-app:latest",
+			"docker_image": "cloudfoundry/private-docker-app:latest",
 			"docker_credentials_json" : {
-				"docker_user" : "hsiliev",
-				"docker_password" : "Rem0tepass",
-				"docker_email" : "hsiliev@gmail.com"
+				"docker_user" : "%s",
+				"docker_password" : "%s",
+				"docker_email" : "%s"
 			},
 			"command": "/myapp/dockerapp",
 			"diego": true
@@ -33,7 +33,8 @@ var _ = Describe("Running a Private Docker Image", func() {
 
 	JustBeforeEach(func() {
 		spaceGuid := guidForSpaceName(context.RegularUserContext().Space)
-		payload := fmt.Sprintf(createDockerAppPayload, appName, spaceGuid)
+		config := helpers.LoadConfig()
+		payload := fmt.Sprintf(createDockerAppPayload, appName, spaceGuid, config.DockerUser, config.DockerPassword, config.DockerEmail)
 		createDockerApp(appName, payload)
 	})
 
