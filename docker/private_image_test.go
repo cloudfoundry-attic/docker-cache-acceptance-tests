@@ -82,9 +82,6 @@ var _ = Describe("Private Docker Image", func() {
 			JustBeforeEach(func() {
 				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
 				Eventually(cf.Cf("restage", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
-			})
-
-			It("starts successfully", func() {
 				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
 			})
 
