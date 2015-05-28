@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -52,11 +53,11 @@ func createDockerApp(appName, payload string) {
 func assertImageAvailable(registryAddress string, imageName string) {
 	client := http.Client{}
 	resp, err := client.Get(fmt.Sprintf("http://%s/v1/search?q=%s", registryAddress, imageName))
-	Ω(err).ShouldNot(HaveOccurred())
-	Ω(resp.StatusCode).Should(Equal(http.StatusOK))
+	Expect(err).NotTo(HaveOccurred())
+	Expect(resp.StatusCode).To(Equal(http.StatusOK))
 	bytes, err := ioutil.ReadAll(resp.Body)
-	Ω(err).ShouldNot(HaveOccurred())
-	Ω(string(bytes)).Should(ContainSubstring("library/" + imageName))
+	Expect(err).NotTo(HaveOccurred())
+	Expect(string(bytes)).To(ContainSubstring("library/" + imageName))
 }
 
 func TestApplications(t *testing.T) {
@@ -87,4 +88,21 @@ func TestApplications(t *testing.T) {
 	}
 
 	RunSpecsWithDefaultAndCustomReporters(t, componentName, rs)
+}
+
+func getAppLogs(appName string) string {
+	cfLogs := cf.Cf("logs", appName, "--recent")
+	Expect(cfLogs.Wait()).To(Exit(0))
+	return string(cfLogs.Out.Contents())
+}
+
+func getAppImageDetails(appName string) (string, string) {
+	contents := getAppLogs(appName)
+
+	//TODO: Replace with list all droplets API (/v3/droplets)
+	r := regexp.MustCompile(".*Docker image will be cached as ([0-z.:]+)/([0-z-]+)")
+	imageParts := r.FindStringSubmatch(contents)
+	Expect(len(imageParts)).Should(Equal(3))
+
+	return imageParts[1], imageParts[2]
 }

@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/gomega/gexec"
 )
 
-var _ = Describe("Running a Private Docker Image", func() {
+var _ = Describe("Private Docker Image", func() {
 	const createDockerAppPayload string = `{
 			"name": "%s",
 			"memory": 512,
@@ -60,7 +60,7 @@ var _ = Describe("Running a Private Docker Image", func() {
 			Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 		})
 
-		It("stores the private image in the caching registry", func() {
+		It("starts successfully", func() {
 			Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
 		})
 	})
@@ -72,17 +72,25 @@ var _ = Describe("Running a Private Docker Image", func() {
 
 		JustBeforeEach(func() {
 			Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "false"))
-		})
-
-		It("fails to start the application due to missing credentials", func() {
 			Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(1))
 
-			cfLogs := cf.Cf("logs", appName, "--recent")
-			Expect(cfLogs.Wait()).To(Exit(0))
-			contents := string(cfLogs.Out.Contents())
+			appLogs := getAppLogs(appName)
+			Expect(appLogs).To(ContainSubstring("failed to fetch metadata"))
+		})
 
-			Expect(contents).To(ContainSubstring("failed to fetch metadata"))
+		Context("and then restaged with caching enabled", func() {
+			JustBeforeEach(func() {
+				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
+				Eventually(cf.Cf("restage", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
+			})
+
+			It("starts successfully", func() {
+				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
+			})
+
+			It("has its public image cached in the private registry", func() {
+				assertImageAvailable(getAppImageDetails(appName))
+			})
 		})
 	})
-
 })

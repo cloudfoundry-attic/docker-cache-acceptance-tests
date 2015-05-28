@@ -2,7 +2,6 @@ package docker
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
@@ -13,7 +12,7 @@ import (
 	. "github.com/onsi/gomega/gexec"
 )
 
-var _ = Describe("Docker Registry", func() {
+var _ = Describe("A Docker App", func() {
 	var appName string
 	var createDockerAppPayload string
 
@@ -32,42 +31,55 @@ var _ = Describe("Docker Registry", func() {
 		}`
 	})
 
-	JustBeforeEach(func() {
-		spaceGuid := guidForSpaceName(context.RegularUserContext().Space)
-		payload := fmt.Sprintf(createDockerAppPayload, appName, spaceGuid)
-
-		createDockerApp(appName, payload)
-
-		Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
-		Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
-		Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
-	})
-
-	AfterEach(func() {
-		Eventually(cf.Cf("logs", appName, "--recent")).Should(Exit())
-		Eventually(cf.Cf("delete", appName, "-f")).Should(Exit(0))
-	})
-
-	Describe("running the app with private registry", func() {
-		var imageName string
-		var address string
-
+	Context("pushed to Diego", func() {
 		JustBeforeEach(func() {
-			cfLogs := cf.Cf("logs", appName, "--recent")
-			Expect(cfLogs.Wait()).To(Exit(0))
-			contents := string(cfLogs.Out.Contents())
+			spaceGuid := guidForSpaceName(context.RegularUserContext().Space)
+			payload := fmt.Sprintf(createDockerAppPayload, appName, spaceGuid)
 
-			//TODO: Replace with list all droplets API (/v3/droplets)
-			r := regexp.MustCompile(".*Docker image will be cached as ([0-z.:]+)/([0-z-]+)")
-			imageParts := r.FindStringSubmatch(contents)
-			Expect(len(imageParts)).Should(Equal(3))
-
-			address = imageParts[1]
-			imageName = imageParts[2]
+			createDockerApp(appName, payload)
 		})
 
-		It("stores the public image in the private registry", func() {
-			assertImageAvailable(address, imageName)
+		AfterEach(func() {
+			Eventually(cf.Cf("logs", appName, "--recent")).Should(Exit())
+			Eventually(cf.Cf("delete", appName, "-f")).Should(Exit(0))
+		})
+
+		Context("with caching enabled", func() {
+
+			JustBeforeEach(func() {
+				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
+				Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
+				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
+			})
+
+			It("has its public image cached in the private registry", func() {
+				assertImageAvailable(getAppImageDetails(appName))
+			})
+		})
+
+		Context("with caching disabled", func() {
+
+			JustBeforeEach(func() {
+				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "false"))
+				Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
+				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
+			})
+
+			Context("and then restaged with caching enabled", func() {
+
+				JustBeforeEach(func() {
+					Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
+					Eventually(cf.Cf("restage", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
+				})
+
+				It("starts", func() {
+					Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
+				})
+
+				It("has its public image cached in the private registry", func() {
+					assertImageAvailable(getAppImageDetails(appName))
+				})
+			})
 		})
 	})
 })
