@@ -20,7 +20,7 @@ import (
 const (
 	CF_PUSH_TIMEOUT                       = 4 * time.Minute
 	LONG_CURL_TIMEOUT                     = 4 * time.Minute
-	DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT = 5 * time.Minute
+	DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT = 10 * time.Minute
 )
 
 var context helpers.SuiteContext
