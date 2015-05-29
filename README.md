@@ -101,9 +101,6 @@ To deploy the tests as BOSH errand you have to:
 cd $GOPATH
 
 bosh deployment $GOPATH/src/github.com/cloudfoundry-incubator/docker-registry-acceptance-tests/templates/bosh-lite.yml
-
-bosh create release --force
-bosh -n upload release
 bosh -n deploy
 ```
 
