@@ -1,4 +1,4 @@
-package docker
+package caching
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
+	. "github.com/cloudfoundry-incubator/docker-registry-acceptance-tests/commons"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -32,7 +33,7 @@ var _ = Describe("Private Docker Image", func() {
 	var appName string
 
 	JustBeforeEach(func() {
-		spaceGuid := guidForSpaceName(context.RegularUserContext().Space)
+		spaceGuid := GuidForSpaceName(context.RegularUserContext().Space)
 		config := helpers.LoadConfig()
 		payload := fmt.Sprintf(createDockerAppPayload,
 			appName,
@@ -42,7 +43,7 @@ var _ = Describe("Private Docker Image", func() {
 			config.DockerPassword,
 			config.DockerEmail,
 		)
-		createDockerApp(appName, payload)
+		CreateDockerApp(context, appName, payload)
 	})
 
 	AfterEach(func() {
@@ -61,7 +62,7 @@ var _ = Describe("Private Docker Image", func() {
 		})
 
 		It("starts successfully", func() {
-			Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
+			Eventually(helpers.CurlingAppRoot(appName)).Should(Equal(OK_RESPONSE))
 		})
 	})
 
@@ -74,7 +75,7 @@ var _ = Describe("Private Docker Image", func() {
 			Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "false"))
 			Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(1))
 
-			appLogs := getAppLogs(appName)
+			appLogs := GetAppLogs(appName)
 			Expect(appLogs).To(ContainSubstring("failed to fetch metadata"))
 		})
 
@@ -82,11 +83,11 @@ var _ = Describe("Private Docker Image", func() {
 			JustBeforeEach(func() {
 				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
 				Eventually(cf.Cf("restage", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
-				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal("0"))
+				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal(OK_RESPONSE))
 			})
 
 			It("has its public image cached in the private registry", func() {
-				assertImageAvailable(getAppImageDetails(appName))
+				AssertImageAvailable(getAppImageDetails(appName))
 			})
 		})
 	})

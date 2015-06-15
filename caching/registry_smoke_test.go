@@ -1,4 +1,4 @@
-package docker
+package caching
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
+	. "github.com/cloudfoundry-incubator/docker-registry-acceptance-tests/commons"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -53,7 +54,7 @@ var _ = Describe("Docker Registry", func() {
 
 		It("can be searched for images", func() {
 			runDockerCommand("push", imageAddress)
-			assertImageAvailable(registryAddress, imageName)
+			AssertImageAvailable(registryAddress, imageName)
 		})
 
 		It("accepts pull requests", func() {
