@@ -1,4 +1,4 @@
-package caching
+package smoke
 
 import (
 	"regexp"
@@ -32,7 +32,7 @@ func TestApplications(t *testing.T) {
 		environment.Teardown()
 	})
 
-	componentName := "Diego-Docker-Caching"
+	componentName := "Diego-Docker-Smoke"
 
 	rs := []Reporter{}
 

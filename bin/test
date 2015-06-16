@@ -3,4 +3,4 @@
 set -e -x
 
 go install -v github.com/onsi/ginkgo/ginkgo
-ginkgo -randomizeAllSpecs -r -failFast -slowSpecThreshold=120 $@ caching feature
+ginkgo -randomizeAllSpecs -r -failFast -slowSpecThreshold=120 $@ smoke caching feature 

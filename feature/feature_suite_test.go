@@ -41,8 +41,6 @@ func TestApplications(t *testing.T) {
 		toBeStoppedApp = generator.RandomName()
 		stoppedApp = generator.RandomName()
 
-		EnableDockerFeatureFlag(context)
-
 		CreateDockerApp(context, startedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, startedApp, spaceGuid))
 		Eventually(cf.Cf("start", startedApp), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 		Eventually(helpers.CurlingAppRoot(startedApp)).Should(Equal(OK_RESPONSE))
@@ -60,7 +58,7 @@ func TestApplications(t *testing.T) {
 		Eventually(cf.Cf("delete", "-r", "-f", toBeStoppedApp)).Should(Exit(0))
 		Eventually(cf.Cf("delete", "-r", "-f", stoppedApp)).Should(Exit(0))
 
-		DisableDockerFeatureFlag(context)
+		EnableDockerFeatureFlag(context)
 
 		environment.Teardown()
 	})

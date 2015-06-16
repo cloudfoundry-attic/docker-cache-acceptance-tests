@@ -1,4 +1,4 @@
-package caching
+package smoke
 
 import (
 	"fmt"
@@ -47,23 +47,21 @@ var _ = Describe("Docker Registry", func() {
 		runDockerCommand("tag", "busybox", imageAddress)
 	})
 
-	Describe("Docker Registry", func() {
-		It("accepts push requests", func() {
-			runDockerCommand("push", imageAddress)
-		})
+	It("accepts push requests", func() {
+		runDockerCommand("push", imageAddress)
+	})
 
-		It("can be searched for images", func() {
-			runDockerCommand("push", imageAddress)
-			AssertImageAvailable(registryAddress, imageName)
-		})
+	It("can be searched for images", func() {
+		runDockerCommand("push", imageAddress)
+		AssertImageAvailable(registryAddress, imageName)
+	})
 
-		It("accepts pull requests", func() {
-			runDockerCommand("push", imageAddress)
-			// Clean the local copy
-			runDockerCommand("rmi", imageAddress)
+	It("accepts pull requests", func() {
+		runDockerCommand("push", imageAddress)
+		// Clean the local copy
+		runDockerCommand("rmi", imageAddress)
 
-			// Make sure we can pull it from private registry
-			runDockerCommand("pull", imageAddress)
-		})
+		// Make sure we can pull it from private registry
+		runDockerCommand("pull", imageAddress)
 	})
 })
