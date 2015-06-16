@@ -80,6 +80,16 @@ In case you use boot2docker you will need to allow access to the insecure regist
 EXTRA_ARGS='--insecure-registry 10.244.2.6:8080'
 ```
 
+#### Enable Docker Feature Flag
+
+In order to run the docker tests you need to enable Docker support in Diego as follows:
+
+```cf enable-feature-flag diego_docker```
+
+After the tests complete you may disable Docker support with:
+
+```cf diable-feature-flag diego_docker```
+
 
 ### Running the tests
 
