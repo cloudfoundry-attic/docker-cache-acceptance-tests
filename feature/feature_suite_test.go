@@ -35,6 +35,7 @@ func TestApplications(t *testing.T) {
 
 	BeforeSuite(func() {
 		environment.Setup()
+		AssertDockerEnabled()
 
 		spaceGuid := GuidForSpaceName(context.RegularUserContext().Space)
 		startedApp = generator.RandomName()

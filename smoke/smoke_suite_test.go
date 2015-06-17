@@ -26,6 +26,7 @@ func TestApplications(t *testing.T) {
 
 	BeforeSuite(func() {
 		environment.Setup()
+		AssertDockerEnabled()
 	})
 
 	AfterSuite(func() {

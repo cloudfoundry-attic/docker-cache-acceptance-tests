@@ -8,6 +8,7 @@ import (
 	"time"
 
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
@@ -83,4 +84,11 @@ func GetAppLogs(appName string) string {
 	cfLogs := cf.Cf("logs", appName, "--recent")
 	Expect(cfLogs.Wait()).To(Exit(0))
 	return string(cfLogs.Out.Contents())
+}
+
+func AssertDockerEnabled() {
+	session := cf.Cf("feature-flag", "diego_docker")
+	Eventually(session.Wait()).Should(Exit(0))
+
+	Expect(session.Out).To(Say("enabled"))
 }
