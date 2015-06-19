@@ -103,7 +103,6 @@ var _ = Describe("Diego Docker Support", func() {
 				It("should fail", func() {
 					Expect(session.Wait()).To(Exit(1))
 					Expect(session.Out).To(Say("Docker support has not been enabled"))
-
 				})
 			})
 
