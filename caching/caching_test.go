@@ -23,7 +23,7 @@ var _ = Describe("A Docker App", func() {
 	Context("pushed to Diego", func() {
 		JustBeforeEach(func() {
 			spaceGuid := GuidForSpaceName(context.RegularUserContext().Space)
-			payload := fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, appName, spaceGuid)
+			payload := fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, appName, spaceGuid, DIEGO_DOCKER_APP_IMAGE)
 
 			CreateDockerApp(context, appName, payload)
 		})

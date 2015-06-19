@@ -42,15 +42,15 @@ func TestApplications(t *testing.T) {
 		toBeStoppedApp = generator.RandomName()
 		stoppedApp = generator.RandomName()
 
-		CreateDockerApp(context, startedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, startedApp, spaceGuid))
+		CreateDockerApp(context, startedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, startedApp, spaceGuid, DIEGO_DOCKER_APP_IMAGE))
 		Eventually(cf.Cf("start", startedApp), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 		Eventually(helpers.CurlingAppRoot(startedApp)).Should(Equal(OK_RESPONSE))
 
-		CreateDockerApp(context, toBeStoppedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, toBeStoppedApp, spaceGuid))
+		CreateDockerApp(context, toBeStoppedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, toBeStoppedApp, spaceGuid, DIEGO_DOCKER_APP_IMAGE))
 		Eventually(cf.Cf("start", toBeStoppedApp), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 		Eventually(helpers.CurlingAppRoot(toBeStoppedApp)).Should(Equal(OK_RESPONSE))
 
-		CreateDockerApp(context, stoppedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, stoppedApp, spaceGuid))
+		CreateDockerApp(context, stoppedApp, fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, stoppedApp, spaceGuid, DIEGO_DOCKER_APP_IMAGE))
 		Consistently(helpers.CurlingAppRoot(stoppedApp)).Should(ContainSubstring(NOT_FOUND))
 	})
 

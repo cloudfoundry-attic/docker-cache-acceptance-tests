@@ -25,12 +25,13 @@ const (
 			"instances": 1,
 			"disk_quota": 1024,
 			"space_guid": "%s",
-			"docker_image": "cloudfoundry/diego-docker-app:latest",
+			"docker_image": "%s",
 			"command": "/myapp/dockerapp",
 			"diego": true
 		}`
-	NOT_FOUND   = "404 Not Found"
-	OK_RESPONSE = "0"
+	NOT_FOUND              = "404 Not Found"
+	OK_RESPONSE            = "0"
+	DIEGO_DOCKER_APP_IMAGE = "cloudfoundry/diego-docker-app:latest"
 )
 
 func GuidForAppName(appName string) string {
