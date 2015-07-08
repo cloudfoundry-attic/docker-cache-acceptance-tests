@@ -1,8 +1,6 @@
 package metadata
 
 import (
-	"fmt"
-
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
@@ -20,10 +18,7 @@ var _ = Describe("Diego Docker Metadata", func() {
 		BeforeEach(func() {
 			appName = generator.RandomName()
 
-			spaceGuid := GuidForSpaceName(context.RegularUserContext().Space)
-			payload := fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, appName, spaceGuid, "cloudfoundry/diego-docker-app-custom:latest")
-
-			CreateDockerApp(context, appName, payload)
+			Eventually(cf.Cf("docker-push", appName, "cloudfoundry/diego-docker-app-custom:latest", "--no-start")).Should(Exit(0))
 		})
 
 		AfterEach(func() {

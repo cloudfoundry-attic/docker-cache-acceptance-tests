@@ -19,19 +19,8 @@ const (
 	CF_PUSH_TIMEOUT                       = 4 * time.Minute
 	LONG_CURL_TIMEOUT                     = 4 * time.Minute
 	DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT = 10 * time.Minute
-	DOCKER_APP_PAYLOAD_TEMPLATE           = `{
-			"name": "%s",
-			"memory": 512,
-			"instances": 1,
-			"disk_quota": 1024,
-			"space_guid": "%s",
-			"docker_image": "%s",
-			"command": "/myapp/dockerapp",
-			"diego": true
-		}`
-	NOT_FOUND              = "404 Not Found"
-	OK_RESPONSE            = "0"
-	DIEGO_DOCKER_APP_IMAGE = "cloudfoundry/diego-docker-app:latest"
+	NOT_FOUND                             = "404 Not Found"
+	OK_RESPONSE                           = "0"
 )
 
 func GuidForAppName(appName string) string {
@@ -50,13 +39,6 @@ func GuidForSpaceName(spaceName string) string {
 	spaceGuid := strings.TrimSpace(string(cfSpace.Out.Contents()))
 	Expect(spaceGuid).NotTo(Equal(""))
 	return spaceGuid
-}
-
-func CreateDockerApp(context helpers.SuiteContext, appName, payload string) {
-	Eventually(cf.Cf("curl", "/v2/apps", "-X", "POST", "-d", payload)).Should(Exit(0))
-	domain := helpers.LoadConfig().AppsDomain
-	Eventually(cf.Cf("create-route", context.RegularUserContext().Space, domain, "-n", appName)).Should(Exit(0))
-	Eventually(cf.Cf("map-route", appName, domain, "-n", appName)).Should(Exit(0))
 }
 
 func AssertImageAvailable(registryAddress string, imageName string) {

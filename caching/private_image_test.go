@@ -43,7 +43,10 @@ var _ = Describe("Private Docker Image", func() {
 			config.DockerPassword,
 			config.DockerEmail,
 		)
-		CreateDockerApp(context, appName, payload)
+		Eventually(cf.Cf("curl", "/v2/apps", "-X", "POST", "-d", payload)).Should(Exit(0))
+		domain := helpers.LoadConfig().AppsDomain
+		Eventually(cf.Cf("create-route", context.RegularUserContext().Space, domain, "-n", appName)).Should(Exit(0))
+		Eventually(cf.Cf("map-route", appName, domain, "-n", appName)).Should(Exit(0))
 	})
 
 	AfterEach(func() {

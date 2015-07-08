@@ -1,8 +1,6 @@
 package caching
 
 import (
-	"fmt"
-
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/generator"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
@@ -22,10 +20,7 @@ var _ = Describe("A Docker App", func() {
 
 	Context("pushed to Diego", func() {
 		JustBeforeEach(func() {
-			spaceGuid := GuidForSpaceName(context.RegularUserContext().Space)
-			payload := fmt.Sprintf(DOCKER_APP_PAYLOAD_TEMPLATE, appName, spaceGuid, DIEGO_DOCKER_APP_IMAGE)
-
-			CreateDockerApp(context, appName, payload)
+			Eventually(cf.Cf("docker-push", appName, "cloudfoundry/diego-docker-app:latest", "--no-start")).Should(Exit(0))
 		})
 
 		AfterEach(func() {
