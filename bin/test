@@ -2,5 +2,6 @@
 
 set -e -x
 
+cf -v
 go install -v github.com/onsi/ginkgo/ginkgo
 ginkgo -randomizeAllSpecs -r -failFast -slowSpecThreshold=120 $@ smoke caching feature metadata
