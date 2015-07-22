@@ -14,7 +14,13 @@ import (
 var _ = Describe("Diego Docker Metadata", func() {
 	var appName string
 
-	Context("with application that listens on a custom port", func() {
+	curlingFunc := func(appName, path string) func() string {
+		return func() string {
+			return helpers.CurlApp(appName, path)
+		}
+	}
+
+	Context("with application that has custom docker build instructions", func() {
 		BeforeEach(func() {
 			appName = generator.RandomName()
 
@@ -29,6 +35,17 @@ var _ = Describe("Diego Docker Metadata", func() {
 		It("starts", func() {
 			Eventually(cf.Cf("start", appName)).Should(Exit(0))
 			Consistently(helpers.CurlingAppRoot(appName)).Should(ContainSubstring(OK_RESPONSE))
+		})
+
+		It("listens on custom port", func() {
+			Eventually(cf.Cf("start", appName)).Should(Exit(0))
+			Consistently(curlingFunc(appName, "/env")).Should(ContainSubstring(`"PORT":"7070"`))
+			Consistently(curlingFunc(appName, "/env")).Should(MatchRegexp(`"CF_INSTANCE_PORTS":"\d+:7070`))
+		})
+
+		It("uses a custom user", func() {
+			Eventually(cf.Cf("start", appName)).Should(Exit(0))
+			Consistently(curlingFunc(appName, "/env")).Should(ContainSubstring(`"USER":"dockeruser"`))
 		})
 	})
 
