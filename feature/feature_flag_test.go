@@ -7,7 +7,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
-	. "github.com/cloudfoundry-incubator/docker-registry-acceptance-tests/commons"
+	. "github.com/cloudfoundry-incubator/docker-cache-acceptance-tests/commons"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

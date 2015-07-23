@@ -19,7 +19,7 @@ jobs:
   templates:
     - name: acceptance-tests
     - name: docker 
-  release: docker-registry
+  release: diego-docker-cache
 
 networks:
 - name: acceptance-tests
@@ -48,15 +48,15 @@ properties:
     docker_executable: /var/vcap/packages/docker-1.6.2/docker
     docker_parameters: ['-H', 'tcp://0.0.0.0:4243']
     docker_private_image: cloudfoundry/private-docker-app:latest 
-    docker_user: cloudfoundry 
-    docker_password: docker4stacks 
-    docker_email: m@example.com 
+    docker_user: user_name 
+    docker_password: password 
+    docker_email: email 
     skip_ssl_validation: true
   docker_registry:
     address: 10.244.2.6:8080
 
 releases:
-- name: docker-registry
+- name: diego-docker-cache
   version: latest
 
 resource_pools:
