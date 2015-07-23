@@ -1,4 +1,4 @@
-# Docker Cache Acceptance Tests (DRATs)
+# Docker Cache Acceptance Tests (DCATs)
 
 This test suite exercises the [Docker Cache](https://github.com/cloudfoundry-incubator/diego-docker-cache) when deployed
 alongside [CF Runtime](https://github.com/cloudfoundry/cf-release) and [Diego](https://github.com/cloudfoundry-incubator/diego-release) .
