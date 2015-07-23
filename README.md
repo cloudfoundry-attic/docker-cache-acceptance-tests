@@ -50,7 +50,7 @@ cat > integration_config.json <<EOF
   "apps_domain": "10.244.0.34.xip.io",
   "docker_registry_address": "10.244.2.6:8080",
   "docker_executable": "docker",
-  "docker_private_image": "private-docker-app"
+  "docker_private_image": "private-docker-app",
   "docker_user": "user",
   "docker_password": "password",
   "docker_email": "email@example.com",
