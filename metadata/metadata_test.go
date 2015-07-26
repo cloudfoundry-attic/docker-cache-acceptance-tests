@@ -49,4 +49,21 @@ var _ = Describe("Diego Docker Metadata", func() {
 		})
 	})
 
+	Context("with application that has no USER instruction", func() {
+		BeforeEach(func() {
+			appName = generator.RandomName()
+
+			Eventually(cf.Cf("docker-push", appName, "cloudfoundry/diego-docker-app:latest", "--no-start")).Should(Exit(0))
+		})
+
+		AfterEach(func() {
+			Eventually(cf.Cf("logs", appName, "--recent")).Should(Exit())
+			Eventually(cf.Cf("delete", appName, "-f")).Should(Exit(0))
+		})
+
+		It("uses user root", func() {
+			Eventually(cf.Cf("start", appName)).Should(Exit(0))
+			Consistently(curlingFunc(appName, "/env")).Should(ContainSubstring(`"USER":"root"`))
+		})
+	})
 })
