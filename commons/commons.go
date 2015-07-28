@@ -43,12 +43,12 @@ func GuidForSpaceName(spaceName string) string {
 
 func AssertImageAvailable(registryAddress string, imageName string) {
 	client := http.Client{}
-	resp, err := client.Get(fmt.Sprintf("http://%s/v1/search?q=%s", registryAddress, imageName))
+	resp, err := client.Get(fmt.Sprintf("http://%s/v2/%s/tags/list", registryAddress, imageName))
 	Expect(err).NotTo(HaveOccurred())
 	Expect(resp.StatusCode).To(Equal(http.StatusOK))
 	bytes, err := ioutil.ReadAll(resp.Body)
 	Expect(err).NotTo(HaveOccurred())
-	Expect(string(bytes)).To(ContainSubstring("library/" + imageName))
+	Expect(string(bytes)).To(ContainSubstring(fmt.Sprintf(`"name":"%s"`, imageName)))
 }
 
 func EnableDockerFeatureFlag(context helpers.SuiteContext) {
