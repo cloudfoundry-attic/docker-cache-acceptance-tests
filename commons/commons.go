@@ -1,6 +1,7 @@
 package commons
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -42,8 +43,16 @@ func GuidForSpaceName(spaceName string) string {
 }
 
 func AssertImageAvailable(registryAddress string, imageName string) {
-	client := http.Client{}
-	resp, err := client.Get(fmt.Sprintf("http://%s/v2/%s/tags/list", registryAddress, imageName))
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := http.Client{Transport: tr}
+
+	address := fmt.Sprintf("%s/v2/%s/tags/list", registryAddress, imageName)
+	resp, err := client.Get("http://" + address)
+	if err != nil {
+		resp, err = client.Get("https://" + address)
+	}
 	Expect(err).NotTo(HaveOccurred())
 	Expect(resp.StatusCode).To(Equal(http.StatusOK))
 	bytes, err := ioutil.ReadAll(resp.Body)
