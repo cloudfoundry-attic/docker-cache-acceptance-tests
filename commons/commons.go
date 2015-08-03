@@ -53,7 +53,7 @@ func AssertImageAvailable(registryAddress string, imageName string) {
 	if err != nil {
 		resp, err = client.Get("https://" + address)
 	}
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred(), fmt.Sprintf("failed to request %s", address))
 	Expect(resp.StatusCode).To(Equal(http.StatusOK))
 	bytes, err := ioutil.ReadAll(resp.Body)
 	Expect(err).NotTo(HaveOccurred())
