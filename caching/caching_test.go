@@ -31,7 +31,7 @@ var _ = Describe("A Docker App", func() {
 		Context("with caching enabled", func() {
 
 			JustBeforeEach(func() {
-				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
+				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true")).Should(Exit(0))
 				Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal(OK_RESPONSE))
 			})
@@ -44,7 +44,7 @@ var _ = Describe("A Docker App", func() {
 		Context("with caching disabled", func() {
 
 			JustBeforeEach(func() {
-				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "false"))
+				Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "false")).Should(Exit(0))
 				Eventually(cf.Cf("start", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 				Eventually(helpers.CurlingAppRoot(appName)).Should(Equal(OK_RESPONSE))
 			})
@@ -52,7 +52,7 @@ var _ = Describe("A Docker App", func() {
 			Context("and then restaged with caching enabled", func() {
 
 				JustBeforeEach(func() {
-					Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true"))
+					Eventually(cf.Cf("set-env", appName, "DIEGO_DOCKER_CACHE", "true")).Should(Exit(0))
 					Eventually(cf.Cf("restage", appName), DOCKER_IMAGE_DOWNLOAD_DEFAULT_TIMEOUT).Should(Exit(0))
 					Eventually(helpers.CurlingAppRoot(appName)).Should(Equal(OK_RESPONSE))
 				})
