@@ -70,6 +70,7 @@ var _ = Describe("Private Docker Image", func() {
 	})
 
 	Context("with caching disabled", func() {
+
 		BeforeEach(func() {
 			appName = generator.RandomName()
 		})
@@ -90,7 +91,7 @@ var _ = Describe("Private Docker Image", func() {
 			})
 
 			It("has its public image cached in the private registry", func() {
-				AssertImageAvailable(getAppImageDetails(appName))
+				AssertImageAvailable(helpers.LoadConfig().DockerRegistryAddress, getAppImageName(appName))
 			})
 		})
 	})

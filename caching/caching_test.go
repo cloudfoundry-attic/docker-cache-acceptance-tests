@@ -13,9 +13,11 @@ import (
 
 var _ = Describe("A Docker App", func() {
 	var appName string
+	var registryAddress string
 
 	BeforeEach(func() {
 		appName = generator.RandomName()
+		registryAddress = helpers.LoadConfig().DockerRegistryAddress
 	})
 
 	Context("pushed to Diego", func() {
@@ -37,7 +39,7 @@ var _ = Describe("A Docker App", func() {
 			})
 
 			It("has its public image cached in the private registry", func() {
-				AssertImageAvailable(getAppImageDetails(appName))
+				AssertImageAvailable(registryAddress, getAppImageName(appName))
 			})
 		})
 
@@ -58,7 +60,7 @@ var _ = Describe("A Docker App", func() {
 				})
 
 				It("has its public image cached in the private registry", func() {
-					AssertImageAvailable(getAppImageDetails(appName))
+					AssertImageAvailable(registryAddress, getAppImageName(appName))
 				})
 			})
 		})

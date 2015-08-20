@@ -45,13 +45,13 @@ func TestApplications(t *testing.T) {
 	RunSpecsWithDefaultAndCustomReporters(t, componentName, rs)
 }
 
-func getAppImageDetails(appName string) (string, string) {
+func getAppImageName(appName string) string {
 	contents := GetAppLogs(appName)
 
 	//TODO: Replace with list all droplets API (/v3/droplets)
-	r := regexp.MustCompile(".*Docker image will be cached as ([0-z.:]+)/([0-z-]+)")
+	r := regexp.MustCompile(".*Docker image will be cached as ([0-z-.:]+)/([0-z-]+)")
 	imageParts := r.FindStringSubmatch(contents)
-	Expect(len(imageParts)).Should(Equal(3))
+	Expect(len(imageParts)).Should(Equal(3), "Docker image name not found")
 
-	return imageParts[1], imageParts[2]
+	return imageParts[2]
 }
