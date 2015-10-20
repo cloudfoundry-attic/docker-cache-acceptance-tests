@@ -8,6 +8,7 @@ import (
 	"github.com/cloudfoundry-incubator/cf-test-helpers/cf"
 	"github.com/cloudfoundry-incubator/cf-test-helpers/helpers"
 	. "github.com/cloudfoundry-incubator/docker-cache-acceptance-tests/commons"
+	"github.com/nu7hatch/gouuid"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -147,9 +148,9 @@ var _ = Describe("Diego Docker Support", func() {
 			})
 
 			Context("when a route is mapped", func() {
-				const routeName = "new-route"
 				var (
-					domain string
+					domain    string
+					routeName string
 				)
 
 				listRoutes := func() []routeEntity {
@@ -164,11 +165,15 @@ var _ = Describe("Diego Docker Support", func() {
 				}
 
 				BeforeEach(func() {
+					uuid, err := uuid.NewV4()
+					Expect(err).NotTo(HaveOccurred())
+					routeName = uuid.String()
+
 					sharedDomainsQuery := cf.Cf("curl", "/v2/shared_domains")
 					Eventually(sharedDomainsQuery.Wait()).Should(Exit(0))
 
 					domainsResult := domainsResult{}
-					err := json.Unmarshal(sharedDomainsQuery.Out.Contents(), &domainsResult)
+					err = json.Unmarshal(sharedDomainsQuery.Out.Contents(), &domainsResult)
 					Expect(err).ToNot(HaveOccurred())
 
 					domain = domainsResult.Domains[0].Domain.Name
@@ -220,7 +225,7 @@ var _ = Describe("Diego Docker Support", func() {
 				})
 
 				It("should bring desired apps back up", func() {
-					Eventually(helpers.CurlingAppRoot(startedApp), 1*time.Minute).Should(Equal(OK_RESPONSE))
+					Eventually(helpers.CurlingAppRoot(startedApp), 2*time.Minute).Should(Equal(OK_RESPONSE))
 					Consistently(helpers.CurlingAppRoot(startedApp)).Should(Equal(OK_RESPONSE))
 
 					Consistently(helpers.CurlingAppRoot(stoppedApp)).Should(ContainSubstring(NOT_FOUND))

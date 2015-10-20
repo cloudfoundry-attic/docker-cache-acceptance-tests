@@ -17,7 +17,7 @@ var context helpers.SuiteContext
 func TestApplications(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	SetDefaultEventuallyTimeout(time.Minute)
+	SetDefaultEventuallyTimeout(2 * time.Minute)
 	SetDefaultEventuallyPollingInterval(time.Second)
 
 	config := helpers.LoadConfig()

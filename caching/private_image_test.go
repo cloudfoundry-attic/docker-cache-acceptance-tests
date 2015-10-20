@@ -70,7 +70,6 @@ var _ = Describe("Private Docker Image", func() {
 	})
 
 	Context("with caching disabled", func() {
-
 		BeforeEach(func() {
 			appName = generator.RandomName()
 		})
