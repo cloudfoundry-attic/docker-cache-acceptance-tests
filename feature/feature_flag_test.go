@@ -185,6 +185,7 @@ var _ = Describe("Diego Docker Support", func() {
 
 				It("shoud not start the app", func() {
 					Consistently(helpers.CurlingAppRoot(startedApp)).Should(ContainSubstring(NOT_FOUND))
+					Eventually(cf.Cf("unmap-route", startedApp, domain, "-n", routeName)).Should(Exit(0))
 				})
 
 				Context("and then unmapped", func() {
