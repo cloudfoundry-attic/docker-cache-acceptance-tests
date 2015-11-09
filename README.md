@@ -44,10 +44,10 @@ installation. Replace credentials, URLs and the path to Docker as appropriate fo
 cd $GOPATH/src/github.com/cloudfoundry-incubator/docker-cache-acceptance-tests
 cat > integration_config.json <<EOF
 {
-  "api": "api.10.244.0.34.xip.io",
+  "api": "api.bosh-lite.com",
   "admin_user": "admin",
   "admin_password": "admin",
-  "apps_domain": "10.244.0.34.xip.io",
+  "apps_domain": "bosh-lite.com",
   "docker_registry_address": "10.244.2.6:8080",
   "docker_executable": "docker",
   "docker_private_image": "private-docker-app",
