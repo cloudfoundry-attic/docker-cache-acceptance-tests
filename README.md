@@ -80,6 +80,12 @@ In case you use boot2docker you will need to allow access to the insecure regist
 EXTRA_ARGS='--insecure-registry 10.244.2.6:8080'
 ```
 
+If you use docker-machine, you should configure a machine to accept the diego cache registry as insecure.
+```
+docker-machine create -d virtualbox --engine-insecure-registry=10.244.2.6:8080 default
+eval "$(docker-machine env default)"
+```
+
 #### Enable Docker Feature Flag
 
 In order to run the docker tests you need to enable Docker support in Diego as follows:
